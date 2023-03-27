@@ -24,7 +24,7 @@ const APP_MSG = '{json:scada} - Change Stream Data Processor'
 const VERSION = '0.1.3'
 const Log = require('./simple-logger')
 let ProcessActive = false // for redundancy control
-var jsConfigFile = '../../conf/json-scada.json'
+// var jsConfigFile = '../../conf/json-scada.json'
 const sqlFilesPath = '../../sql/'
 const fs = require('fs')
 const { MongoClient, Double, ReadPreference } = require('mongodb')
@@ -33,6 +33,16 @@ const { setInterval } = require('timers')
 
 const SoeDataCollectionName = 'soeData'
 const LowestPriorityThatBeeps = 1 // will beep for priorities zero and one
+
+var mongodb_name = process.env.JSON_SCADA_MONGODB_NAME
+var db_hostname = process.env.MONGODB_HOSTNAME
+
+var jsConfigFileObject = {
+  nodeName: process.env.NODE_NAME,
+  mongoConnectionString: `mongodb://${db_hostname}:27017/${mongodb_name}?replicaSet=rs1`,
+  mongoDatabaseName: process.env.JSON_SCADA_MONGODB_NAME
+}
+var jsConfigFile = JSON.stringify(jsConfigFileObject)
 
 const args = process.argv.slice(2)
 var inst = null
@@ -52,10 +62,10 @@ Log.log('Instance: ' + Instance)
 Log.log('Log level: ' + Log.levelCurrent)
 Log.log('Config File: ' + jsConfigFile)
 
-if (!fs.existsSync(jsConfigFile)) {
-  Log.log('Error: config file not found!', Log.levelMin)
-  process.exit()
-}
+//if (!fs.existsSync(jsConfigFile)) {
+//  Log.log('Error: config file not found!', Log.levelMin)
+//  process.exit()
+//}
 
 let ReadFromSecondary = false
 if (
@@ -94,8 +104,9 @@ const beepPointKey = -1
 const cntUpdatesPointKey = -2
 const invalidDetectCycle = 15000
 
-let rawFileContents = fs.readFileSync(jsConfigFile)
-let jsConfig = JSON.parse(rawFileContents)
+//let rawFileContents = fs.readFileSync(jsConfigFile)
+//let jsConfig = JSON.parse(rawFileContents)
+let jsConfig = jsConfigFileObject
 if (
   typeof jsConfig.mongoConnectionString != 'string' ||
   jsConfig.mongoConnectionString === ''

@@ -23,7 +23,17 @@ const APP_NAME = 'CS_CUSTOM_PROCESSOR'
 const APP_MSG = '{json:scada} - Change Stream Custom Processor'
 const VERSION = '0.1.1'
 let ProcessActive = false // for redundancy control
-var jsConfigFile = '../../conf/json-scada.json'
+//var jsConfigFile = '../../conf/json-scada.json'
+
+const mongodb_name = process.env.JSON_SCADA_DB_NAME
+const db_hostname = process.env.MONGODB_HOSTNAME
+
+const jsConfigFile = {
+  nodeName: process.env.NODE_NAME,
+  mongoConnectionString: `mongodb://${db_hostname}:27017/${mongodb_name}?replicaSet=rs1`,
+  mongoDatabaseName: process.env.JSON_SCADA_MONGODB_NAME
+}
+
 const fs = require('fs')
 const { MongoClient, Double, ReadPreference } = require('mongodb')
 const Queue = require('queue-fifo')

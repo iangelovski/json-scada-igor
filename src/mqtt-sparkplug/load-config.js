@@ -27,18 +27,29 @@ function LoadConfig () {
 
   var confFileArg = null
   if (args.length > 2) confFileArg = args[2]
+  var mongodb_name = process.env.JSON_SCADA_MONGODB_NAME
+  var db_hostname = process.env.MONGODB_HOSTNAME
+
+  var jsConfigFileObject = {
+    nodeName: process.env.NODE_NAME,
+    mongoConnectionString: `mongodb://${db_hostname}:27017/${mongodb_name}?replicaSet=rs1`,
+    mongoDatabaseName: process.env.JSON_SCADA_MONGODB_NAME
+  }
+  var jsConfigFile = JSON.stringify(jsConfigFileObject)
+  if (args.length > 2) confFileArg = args[2]
 
   let configFile =
-    confFileArg || process.env.JS_CONFIG_FILE || '../../conf/json-scada.json'
+    confFileArg || process.env.JS_CONFIG_FILE || jsConfigFile //'../../conf/json-scada.json'
   Log.log('Config - Config File: ' + configFile)
 
-  if (!fs.existsSync(configFile)) {
-    Log.log('Config - Error: config file not found!')
-    process.exit()
-  }
+  //if (!fs.existsSync(configFile)) {
+  //  Log.log('Config - Error: config file not found!')
+  //  process.exit()
+  //}
 
-  let rawFileContents = fs.readFileSync(configFile)
-  let configObj = JSON.parse(rawFileContents)
+  //let rawFileContents = fs.readFileSync(configFile)
+  //let configObj = JSON.parse(rawFileContents)
+  let configObj = jsConfigFileObject
   if (
     typeof configObj.mongoConnectionString != 'string' ||
     configObj.mongoConnectionString === ''
